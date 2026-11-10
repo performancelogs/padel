@@ -1,0 +1,239 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="description" content="Free companion app for The Padel Partnership Log: sketch a moment from your match, get a code for your log and share it with your partner.">
+<style>:root{color-scheme:light}body{margin:0;font:14px system-ui,sans-serif}img{max-width:100%}[hidden]{display:none!important}</style>
+<title>Padel Partnership Sketch</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lora:wght@600&family=Inter:wght@400;500;600;700&display=swap">
+<style>
+/* Layout: one column on phones; court left + controls right on wider screens. The court keeps real padel colours in both themes. */
+:root{
+  --bg:#f3f6f9; --panel:#ffffff; --ink:#15232f; --muted:#5b6b78; --line:#d5dee6;
+  --accent:#2d6a9a; --accent-ink:#ffffff; --chip:#e7eef4;
+  --court:#2d6a9a; --court-edge:#1f4f75; --mark:#ffffff; --ball:#e3f04a;
+  --display:'Lora',Georgia,serif; --body:'Inter',system-ui,-apple-system,'Segoe UI',sans-serif;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0f1820; --panel:#16222d; --ink:#e6eef4; --muted:#93a4b2; --line:#2a3a48;
+  --accent:#6aa7d6; --accent-ink:#0f1820; --chip:#1f2e3b; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0f1820; --panel:#16222d; --ink:#e6eef4; --muted:#93a4b2; --line:#2a3a48;
+  --accent:#6aa7d6; --accent-ink:#0f1820; --chip:#1f2e3b; color-scheme:dark}
+html,body{background:var(--bg);color:var(--ink)}
+body{font-family:var(--body);font-size:15px;line-height:1.5;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:20px 32px}
+.wrap{max-width:980px;margin:0 auto;display:grid;gap:20px}
+header{display:flex;flex-direction:column;gap:2px}
+header small{font-size:12px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+h1{font-family:var(--display);font-weight:600;font-size:clamp(24px,4vw,32px);line-height:1.15;text-wrap:balance;margin:0}
+.lede{color:var(--muted);max-width:60ch;margin:4px 0 0}
+.main{display:grid;grid-template-columns:minmax(0,1fr);gap:20px;align-items:start}
+@media (min-width:760px){.main{grid-template-columns:minmax(0,380px) minmax(0,1fr)}}
+.courtbox{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:12px;display:grid;gap:10px}
+svg#court{width:100%;max-width:380px;margin:0 auto;display:block;touch-action:none;user-select:none}
+.hint{font-size:13px;color:var(--muted);text-align:center;min-height:2.6em}
+.side{display:grid;gap:16px;min-width:0}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:16px;display:grid;gap:12px;min-width:0}
+.card h2{font-size:12px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);margin:0}
+.tools{display:flex;flex-wrap:wrap;gap:8px}
+button{font:inherit;font-size:14px;font-weight:600;border-radius:999px;border:1px solid var(--line);background:var(--chip);color:var(--ink);padding:8px 14px;cursor:pointer}
+button[aria-pressed="true"]{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+button.primary{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+button:focus-visible,input:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.code{font-family:ui-monospace,'SF Mono',Menlo,Consolas,monospace;font-size:clamp(20px,5vw,26px);font-weight:700;letter-spacing:.08em;font-variant-numeric:tabular-nums;overflow-wrap:anywhere;user-select:all}
+.row{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+input{font:inherit;font-family:ui-monospace,Menlo,Consolas,monospace;font-size:16px;letter-spacing:.06em;text-transform:uppercase;padding:9px 12px;border-radius:8px;border:1px solid var(--line);background:var(--bg);color:var(--ink);flex:1 1 200px;min-width:0}
+.msg{font-size:13px;color:var(--muted);min-height:1.4em;margin:0}
+.msg.err{color:#c0392b}
+.key{display:grid;grid-template-columns:auto 1fr;gap:6px 10px;font-size:13px;color:var(--muted);align-items:center}
+.sw{width:22px;height:22px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-size:10px;font-weight:700}
+.sw.me{background:#fff;color:#15232f;border:2px solid #15232f}.sw.op{background:#15232f;color:#fff;border:2px solid #15232f}
+.ln{width:26px;height:0;border-top:3px solid #b9c22a}.ln.mv{border-top:2px dashed var(--muted)}
+footer{font-size:13px;color:var(--muted);border-top:1px solid var(--line);padding-top:14px}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <small>Companion to The Padel Partnership Log</small>
+    <h1>Padel Partnership Sketch</h1>
+    <p class="lede">Sketch a moment from your match, then share it with your partner. Write the code in the App code box in your log, and type it back in here any time to see the sketch again.</p>
+  </header>
+
+  <div class="main">
+    <section class="courtbox" aria-label="Court">
+      <svg id="court" viewBox="-1.4 -1.4 12.8 22.8" role="img" aria-label="Padel court seen from above, your end at the bottom"></svg>
+      <p class="hint" id="hint"></p>
+    </section>
+
+    <div class="side">
+      <section class="card">
+        <h2>Draw</h2>
+        <div class="tools" role="group" aria-label="Drawing tool">
+          <button id="t-move" aria-pressed="true">Move players</button>
+          <button id="t-ball" aria-pressed="false">Ball path</button>
+          <button id="t-run" aria-pressed="false">Movement</button>
+        </div>
+        <div class="tools">
+          <button id="clear">Clear arrows</button>
+          <button id="reset">Start again</button>
+        </div>
+        <div class="key">
+          <span class="sw me">M</span><span>Me and P, my partner</span>
+          <span class="sw op">O1</span><span>Opponents</span>
+          <span class="ln"></span><span>Ball path</span>
+          <span class="ln mv"></span><span>Player movement</span>
+        </div>
+      </section>
+
+      <section class="card">
+        <h2>Sketch code</h2>
+        <div class="code" id="code" aria-live="polite"></div>
+        <div class="row">
+          <button class="primary" id="copycode">Copy code</button>
+          <button id="copylink">Copy link for my partner</button>
+        </div>
+        <p class="msg" id="copymsg"></p>
+      </section>
+
+      <section class="card">
+        <h2>Open a code</h2>
+        <form class="row" id="openform">
+          <label for="codein" hidden>Sketch code</label>
+          <input id="codein" placeholder="PEVM-JM29-NAMT-QZZZ" autocomplete="off" spellcheck="false">
+          <button type="submit">Open</button>
+        </form>
+        <p class="msg" id="openmsg"></p>
+      </section>
+    </div>
+  </div>
+
+  <footer>Made for The Padel Partnership Log by Kevin Hardwicke. Nothing is stored online: your sketch lives in its code. The example loaded at the start is the worked example from the book.</footer>
+</div>
+
+<script>
+(() => {
+  const A = '0123456789ABCDEFGHJKMNPQRSTVWXYZ';           // no I, L, O or U, so codes are easy to copy by hand
+  const NONE = 255, NAMES = ['M','P','O1','O2'];
+  const EXAMPLE = 'PEVM-JM29-NAMT-QZZZ';
+  const START = {pl:[[3,17],[7,17],[7,3],[3,3]], ball:null, mv:[null,null,null,null]};
+  const svg = document.getElementById('court'), NS = 'http://www.w3.org/2000/svg';
+  let st = clone(START), tool = 'move', drag = null;
+
+  function clone(o){ return JSON.parse(JSON.stringify(o)); }
+  const idx = p => p ? p[1]*11 + p[0] : NONE;
+  const pt = v => v === NONE ? null : [v % 11, Math.floor(v / 11)];
+
+  function encode(s){
+    const b = [...s.pl.map(idx), s.ball ? idx(s.ball[0]) : NONE, s.ball ? idx(s.ball[1]) : NONE, ...s.mv.map(idx)];
+    let n = 0n; for (const x of b) n = (n << 8n) | BigInt(x);
+    let out = ''; for (let i = 0; i < 16; i++){ out = A[Number(n & 31n)] + out; n >>= 5n; }
+    return out.match(/.{4}/g).join('-');
+  }
+  function decode(code){
+    const c = code.toUpperCase().replace(/[^0-9A-Z]/g,'').replace(/O/g,'0').replace(/[IL]/g,'1');
+    if (c.length !== 16) throw new Error('A code has 16 letters and numbers. Check you have copied all four groups.');
+    let n = 0n;
+    for (const ch of c){ const v = A.indexOf(ch); if (v < 0) throw new Error(`“${ch}” isn’t used in sketch codes. Check that character.`); n = (n << 5n) | BigInt(v); }
+    const b = []; for (let i = 0; i < 10; i++){ b.unshift(Number(n & 255n)); n >>= 8n; }
+    const ok = v => v === NONE || v <= 230;
+    if (!b.every(ok) || b.slice(0,4).some(v => v === NONE) || ((b[4] === NONE) !== (b[5] === NONE)))
+      throw new Error('That code doesn’t make a sketch. One character may have been copied wrongly.');
+    return {pl:b.slice(0,4).map(pt), ball:b[4] === NONE ? null : [pt(b[4]), pt(b[5])], mv:b.slice(6).map(pt)};
+  }
+
+  function el(tag, attrs, parent){ const e = document.createElementNS(NS, tag); for (const k in attrs) e.setAttribute(k, attrs[k]); (parent||svg).appendChild(e); return e; }
+  function draw(){
+    svg.innerHTML = '';
+    const defs = el('defs', {});
+    const mk = (id, col) => { const m = el('marker', {id, viewBox:'0 0 10 10', refX:'8', refY:'5', markerWidth:'4', markerHeight:'4', orient:'auto'}, defs); el('path', {d:'M0 0L10 5L0 10z', fill:col}, m); };
+    mk('hb', '#e3f04a'); mk('hm', '#ffffff');
+    el('rect', {x:-1.4, y:-1.4, width:12.8, height:22.8, rx:.4, fill:'#1f4f75'});
+    el('rect', {x:0, y:0, width:10, height:20, fill:'#2d6a9a'});
+    const L = {stroke:'#fff', 'stroke-width':.07, fill:'none'};
+    el('line', {x1:0, y1:3.05, x2:10, y2:3.05, ...L}); el('line', {x1:0, y1:16.95, x2:10, y2:16.95, ...L});
+    el('line', {x1:5, y1:2.85, x2:5, y2:17.15, ...L});
+    el('line', {x1:-.5, y1:10, x2:10.5, y2:10, stroke:'#fff', 'stroke-width':.16});
+    const W = {stroke:'#d9e6f0', 'stroke-width':.22, fill:'none'};
+    el('path', {d:'M0 4V0H10V4M0 16V20H10V16', ...W});
+    el('path', {d:'M0 4V16M10 4V16', stroke:'#d9e6f0', 'stroke-width':.08, 'stroke-dasharray':'.35 .25'});
+    if (tool !== 'move') for (let y = 0; y <= 20; y++) for (let x = 0; x <= 10; x++) el('circle', {cx:x, cy:y, r:.05, fill:'rgba(255,255,255,.35)'});
+    const t = (x, y, s, a='middle') => { const e = el('text', {x, y, 'font-size':.55, 'font-family':'Inter, sans-serif', 'font-weight':700, fill:'rgba(255,255,255,.7)', 'text-anchor':a}); e.textContent = s; };
+    t(2.5, 19.4, 'LEFT'); t(7.5, 19.4, 'RIGHT'); t(5, -.55, 'THEIR END'); t(5, 21.05, 'MY END');
+    const arrow = (a, b, kind) => {
+      const dx = b[0]-a[0], dy = b[1]-a[1], d = Math.hypot(dx, dy) || 1, s = kind === 'ball' ? .45 : .62, e = .62;
+      const at = {x1:a[0]+dx/d*s, y1:a[1]+dy/d*s, x2:b[0]-dx/d*(kind === 'ball' ? .2 : .05), y2:b[1]-dy/d*(kind === 'ball' ? .2 : .05)};
+      if (kind === 'ball') el('line', {...at, stroke:'#e3f04a', 'stroke-width':.14, 'marker-end':'url(#hb)'});
+      else el('line', {...at, stroke:'#fff', 'stroke-width':.1, 'stroke-dasharray':'.3 .2', 'marker-end':'url(#hm)'});
+    };
+    st.mv.forEach((m, i) => { if (m) arrow(st.pl[i], m, 'move'); });
+    if (st.ball){ arrow(st.ball[0], st.ball[1], 'ball'); el('circle', {cx:st.ball[0][0], cy:st.ball[0][1], r:.22, fill:'#e3f04a', stroke:'#15232f', 'stroke-width':.04}); }
+    st.pl.forEach((p, i) => {
+      const g = el('g', {'data-i':i, style:tool === 'move' ? 'cursor:grab' : ''});
+      const mine = i < 2;
+      el('circle', {cx:p[0], cy:p[1], r:.55, fill:mine ? '#fff' : '#15232f', stroke:mine ? '#15232f' : '#fff', 'stroke-width':.08}, g);
+      const tx = el('text', {x:p[0], y:p[1]+.2, 'font-size':i < 2 ? .58 : .48, 'font-weight':700, 'font-family':'Inter, sans-serif', 'text-anchor':'middle', fill:mine ? '#15232f' : '#fff'}, g);
+      tx.textContent = NAMES[i];
+    });
+    const code = encode(st);
+    document.getElementById('code').textContent = code;
+    try { if (location.hash.slice(1) !== code.replace(/-/g,'')) history.replaceState(null, '', '#' + code.replace(/-/g,'')); } catch(e) {}
+    document.getElementById('hint').textContent = {
+      move:'Drag any player to where they were when the ball was struck.',
+      ball:'Drag from where the ball was hit to where it went.',
+      run:'Drag from a player to where they moved. Drag again to change it.'}[tool];
+  }
+
+  function svgPt(ev){ const p = svg.createSVGPoint(); p.x = ev.clientX; p.y = ev.clientY; const q = p.matrixTransform(svg.getScreenCTM().inverse()); return [Math.max(0, Math.min(10, Math.round(q.x))), Math.max(0, Math.min(20, Math.round(q.y)))]; }
+  function nearest(p){ let best = -1, bd = 1.3; st.pl.forEach((q, i) => { const d = Math.hypot(q[0]-p[0], q[1]-p[1]); if (d < bd){ bd = d; best = i; } }); return best; }
+
+  svg.addEventListener('pointerdown', ev => {
+    const p = svgPt(ev); svg.setPointerCapture(ev.pointerId);
+    if (tool === 'move'){ const i = nearest(p); if (i >= 0) drag = {i}; }
+    else if (tool === 'ball'){ st.ball = [p, p]; drag = {ball:true}; }
+    else { const i = nearest(p); if (i >= 0){ st.mv[i] = st.pl[i].slice(); drag = {run:i}; } }
+    draw();
+  });
+  svg.addEventListener('pointermove', ev => {
+    if (!drag) return; const p = svgPt(ev);
+    if ('i' in drag) st.pl[drag.i] = p; else if (drag.ball) st.ball[1] = p; else st.mv[drag.run] = p;
+    draw();
+  });
+  const end = () => {
+    if (drag && drag.ball && st.ball && st.ball[0][0] === st.ball[1][0] && st.ball[0][1] === st.ball[1][1]) st.ball = null;
+    if (drag && 'run' in drag){ const m = st.mv[drag.run], q = st.pl[drag.run]; if (m && m[0] === q[0] && m[1] === q[1]) st.mv[drag.run] = null; }
+    drag = null; draw();
+  };
+  svg.addEventListener('pointerup', end); svg.addEventListener('pointercancel', end);
+
+  const tb = {move:'t-move', ball:'t-ball', run:'t-run'};
+  for (const k in tb) document.getElementById(tb[k]).addEventListener('click', () => { tool = k; for (const j in tb) document.getElementById(tb[j]).setAttribute('aria-pressed', j === k); draw(); });
+  document.getElementById('clear').addEventListener('click', () => { st.ball = null; st.mv = [null,null,null,null]; draw(); });
+  document.getElementById('reset').addEventListener('click', () => { st = clone(START); draw(); });
+
+  async function copy(text, label){
+    const m = document.getElementById('copymsg'); m.classList.remove('err');
+    try { await navigator.clipboard.writeText(text); m.textContent = label + ' copied.'; }
+    catch(e){ m.textContent = 'Copying isn’t allowed here. Select it and copy: ' + text; const r = document.createRange(); r.selectNodeContents(document.getElementById('code')); const s = getSelection(); s.removeAllRanges(); s.addRange(r); }
+  }
+  document.getElementById('copycode').addEventListener('click', () => copy(encode(st), 'Code'));
+  document.getElementById('copylink').addEventListener('click', () => copy(location.href.split('#')[0] + '#' + encode(st).replace(/-/g,''), 'Link'));
+
+  function load(code, msgEl){
+    try { st = decode(code); draw(); if (msgEl){ msgEl.classList.remove('err'); msgEl.textContent = 'Sketch opened.'; } return true; }
+    catch(e){ if (msgEl){ msgEl.classList.add('err'); msgEl.textContent = e.message; } return false; }
+  }
+  document.getElementById('openform').addEventListener('submit', ev => { ev.preventDefault(); load(document.getElementById('codein').value, document.getElementById('openmsg')); });
+  window.addEventListener('hashchange', () => { const h = location.hash.slice(1); if (h && h !== encode(st).replace(/-/g,'')) load(h, document.getElementById('openmsg')); });
+
+  const h = location.hash.slice(1);
+  if (!(h && load(h, document.getElementById('openmsg')))) load(EXAMPLE);
+})();
+</script>
+
+</body>
+</html>
