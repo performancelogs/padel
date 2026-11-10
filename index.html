@@ -51,6 +51,10 @@ input{font:inherit;font-family:ui-monospace,Menlo,Consolas,monospace;font-size:1
 .sw{width:22px;height:22px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-size:10px;font-weight:700}
 .sw.me{background:#fff;color:#15232f;border:2px solid #15232f}.sw.op{background:#15232f;color:#fff;border:2px solid #15232f}
 .ln{width:26px;height:0;border-top:3px solid #b9c22a}.ln.mv{border-top:2px dashed var(--muted)}
+.help{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:0 16px}
+.help summary{cursor:pointer;font-weight:600;padding:14px 0;list-style-position:inside}
+.help ol{margin:0 0 14px;padding-left:22px;display:grid;gap:8px;max-width:65ch}
+.help p{margin:0 0 14px;color:var(--muted);max-width:65ch}
 footer{font-size:13px;color:var(--muted);border-top:1px solid var(--line);padding-top:14px}
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
 </style>
@@ -63,6 +67,19 @@ footer{font-size:13px;color:var(--muted);border-top:1px solid var(--line);paddin
     <h1>Padel Partnership Sketch</h1>
     <p class="lede">Sketch a moment from your match, then share it with your partner. Write the code in the App code box in your log, and type it back in here any time to see the sketch again.</p>
   </header>
+
+  <details class="help" id="help">
+    <summary>New here? How to use this app in six steps</summary>
+    <ol>
+      <li><b>Move the players.</b> M is you, P is your partner, and O1 and O2 are your opponents. Press a circle with your finger and slide it to where that player was.</li>
+      <li><b>Draw the ball.</b> Tap <b>Ball path</b>. Put your finger where the ball was hit and slide to where it went. A yellow arrow appears.</li>
+      <li><b>Show who moved</b>, if you want to. Tap <b>Movement</b>. Put your finger on a player and slide to where they moved.</li>
+      <li><b>Write down the code.</b> The sketch code is in its own box further down. Copy it into the App code box in your log.</li>
+      <li><b>Send it to your partner.</b> Tap <b>Copy link for my partner</b>, then paste it into a text or WhatsApp message.</li>
+      <li><b>See a sketch again.</b> Type its code into <b>Open a code</b> and tap <b>Open</b>.</li>
+    </ol>
+    <p>Made a mistake? Tap <b>Clear arrows</b> or <b>Start again</b>. Nothing is stored online, so you can’t break anything. The sketch you see first is the worked example from the book.</p>
+  </details>
 
   <div class="main">
     <section class="courtbox" aria-label="Court">
